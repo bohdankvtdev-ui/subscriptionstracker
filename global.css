@@ -4,19 +4,118 @@
 
 @import "nativewind/theme";
 
-@theme {
-    --color-background: #fff9e3;
-    --color-foreground: #081126;
-    --color-card: #fff8e7;
-    --color-muted: #f6eecf;
-    --color-muted-foreground: rgba(0, 0, 0, 0.6);
-    --color-primary: #081126;
-    --color-accent: #ea7a53;
-    --color-border: rgba(0, 0, 0, 0.1);
-    --color-success: #16a34a;
-    --color-destructive: #dc2626;
-    --color-subscription: #8fd1bd;
+/*
+ * Colorful soft neo-brutalism + Notion rhythm: paper canvas, ink type, saturated
+ * mint / sky / coral notes, ink borders, tinted offset “stamp” shadows.
+ * Mirrors `constants/theme.ts` for RN style props.
+ */
+:root {
+    --background: #f4f1ea;
+    --foreground: #1c2220;
+    --card: #fffdf8;
+    --card-foreground: #1c2220;
+    --popover: #fffdf8;
+    --popover-foreground: #1c2220;
+    --primary: #0f766e;
+    --primary-foreground: #f0fdf9;
+    --secondary: #bae6fd;
+    --secondary-foreground: #0c4a6e;
+    --muted: #e8e4dc;
+    --muted-foreground: #4b5552;
+    --accent: #6ee7b7;
+    --accent-foreground: #064e3b;
+    --destructive: #dc5b52;
+    --destructive-foreground: #fff8f6;
+    --border: #3f3a36;
+    --input: #ede8df;
+    --ring: #0f766e;
+    --chart-1: #0f766e;
+    --chart-2: #0ea5e9;
+    --chart-3: #34d399;
+    --chart-4: #fbbf77;
+    --chart-5: #818cf8;
+    --sidebar: #e8e4dc;
+    --sidebar-foreground: #1c2220;
+    --sidebar-primary: #0f766e;
+    --sidebar-primary-foreground: #f0fdf9;
+    --sidebar-accent: #6ee7b7;
+    --sidebar-accent-foreground: #064e3b;
+    --sidebar-border: #3f3a36;
+    --sidebar-ring: #0f766e;
+    --radius: 0.75rem;
+    --success: #15803d;
+    --subscription: #a7f3d0;
+    --tracking-normal: 0em;
+    --shadow-2xs: 2px 2px 0 0 rgba(15, 118, 110, 0.12);
+    --shadow-xs: 3px 3px 0 0 rgba(15, 118, 110, 0.14);
+    --shadow-sm: 4px 4px 0 0 rgba(15, 118, 110, 0.18);
+    --shadow: 5px 5px 0 0 rgba(12, 74, 110, 0.16);
+    --shadow-md: 6px 6px 0 0 rgba(12, 74, 110, 0.18);
+    --shadow-lg: 7px 7px 0 0 rgba(63, 58, 54, 0.14);
+    --shadow-xl: 8px 8px 0 0 rgba(63, 58, 54, 0.16);
+    --shadow-2xl: 9px 9px 0 0 rgba(63, 58, 54, 0.2);
+}
 
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    --shadow-2xs: var(--shadow-2xs);
+    --shadow-xs: var(--shadow-xs);
+    --shadow-sm: var(--shadow-sm);
+    --shadow: var(--shadow);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+    --shadow-2xl: var(--shadow-2xl);
+
+    --color-success: var(--success);
+    --color-subscription: var(--subscription);
+
+    --font-sans: Montserrat_400Regular;
+    --font-sans-light: Montserrat_300Light;
+    --font-sans-medium: Montserrat_500Medium;
+    --font-sans-semibold: Montserrat_600SemiBold;
+    --font-sans-bold: Montserrat_700Bold;
+    --font-sans-extrabold: Montserrat_800ExtraBold;
+}
+
+@theme {
     --spacing-0: 0px;
     --spacing-1: 4px;
     --spacing-2: 8px;
@@ -36,32 +135,19 @@
     --spacing-20: 80px;
     --spacing-24: 96px;
     --spacing-30: 120px;
+}
 
-    --font-sans: sans-regular;
-    --font-sans-light: sans-light;
-    --font-sans-medium: sans-medium;
-    --font-sans-semibold: sans-semibold;
-    --font-sans-bold: sans-bold;
-    --font-sans-extrabold: sans-extrabold;
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background font-sans text-foreground;
+    }
 }
 
 @layer components {
-    .tabs-icon {
-        @apply size-12 items-center justify-center;
-    }
-
-    .tabs-pill {
-        @apply size-12 items-center justify-center rounded-full bg-transparent;
-    }
-
-    .tabs-active {
-        @apply bg-accent;
-    }
-
-    .tabs-glyph {
-        @apply size-6;
-    }
-
     .home-header {
         @apply mb-2.5 flex-row items-center justify-between;
     }
@@ -71,11 +157,11 @@
     }
 
     .home-avatar {
-        @apply size-16 rounded-full;
+        @apply size-16 rounded-2xl border-2 border-border shadow-xs;
     }
 
     .home-user-name {
-        @apply ml-4 text-2xl font-sans-bold text-primary;
+        @apply ml-4 text-2xl font-sans-bold tracking-tight text-foreground;
     }
 
     .home-add-icon {
@@ -83,11 +169,11 @@
     }
 
     .home-balance-card {
-        @apply my-2.5 min-h-50 justify-between gap-5 rounded-bl-4xl rounded-tr-4xl bg-accent p-6;
+        @apply my-2.5 min-h-50 justify-between gap-5 rounded-2xl border-2 border-border bg-card p-6 shadow-sm;
     }
 
     .home-balance-label {
-        @apply text-xl font-sans-semibold text-white/80;
+        @apply text-sm font-sans-semibold uppercase tracking-wider text-primary;
     }
 
     .home-balance-row {
@@ -95,11 +181,11 @@
     }
 
     .home-balance-amount {
-        @apply text-4xl font-sans-extrabold text-white;
+        @apply text-4xl font-sans-extrabold tracking-tight text-foreground;
     }
 
     .home-balance-date {
-        @apply text-xl font-sans-medium text-white;
+        @apply rounded-lg border-2 border-foreground/15 bg-secondary px-3 py-1.5 text-base font-sans-semibold text-secondary-foreground;
     }
 
     .list-head {
@@ -107,19 +193,19 @@
     }
 
     .list-title {
-        @apply text-2xl font-sans-bold text-primary;
+        @apply text-2xl font-sans-bold tracking-tight text-foreground;
     }
 
     .list-action {
-        @apply rounded-full border border-black/20 px-4 py-1;
+        @apply rounded-xl border-2 border-border bg-accent/25 px-3 py-1.5 shadow-xs;
     }
 
     .list-action-text {
-        @apply text-lg font-sans-semibold text-primary;
+        @apply text-sm font-sans-semibold text-foreground;
     }
 
     .upcoming-card {
-        @apply mr-4 w-44 rounded-2xl border border-black/10 bg-background p-4;
+        @apply mr-4 w-44 rounded-2xl border-2 border-border bg-secondary/35 p-4 shadow-xs;
     }
 
     .upcoming-row {
@@ -131,7 +217,7 @@
     }
 
     .upcoming-price {
-        @apply text-lg font-sans-bold text-primary;
+        @apply text-lg font-sans-bold text-foreground;
     }
 
     .upcoming-meta {
@@ -139,15 +225,15 @@
     }
 
     .upcoming-name {
-        @apply mt-2 text-lg font-sans-bold text-primary;
+        @apply mt-2 text-lg font-sans-bold text-foreground;
     }
 
     .sub-card {
-        @apply rounded-2xl border border-border p-4;
+        @apply rounded-2xl border-2 border-border/90 p-4 shadow-xs;
     }
 
     .sub-card-expanded {
-        @apply bg-subscription;
+        @apply border-foreground/20 bg-subscription shadow-sm;
     }
 
     .sub-head {
@@ -159,7 +245,7 @@
     }
 
     .sub-icon {
-        @apply size-16 rounded-lg;
+        @apply size-16 rounded-xl border border-border/60;
     }
 
     .sub-copy {
@@ -167,7 +253,7 @@
     }
 
     .sub-title {
-        @apply mb-1 text-lg font-sans-bold text-primary;
+        @apply mb-1 text-lg font-sans-bold text-foreground;
     }
 
     .sub-meta {
@@ -179,7 +265,7 @@
     }
 
     .sub-price {
-        @apply mb-1 text-lg font-sans-bold text-primary;
+        @apply mb-1 text-lg font-sans-bold text-foreground;
     }
 
     .sub-billing {
@@ -207,7 +293,7 @@
     }
 
     .sub-value {
-        @apply flex-1 font-sans-bold text-primary;
+        @apply flex-1 font-sans-bold text-foreground;
     }
 
     .sub-cancel {
@@ -219,11 +305,11 @@
     }
 
     .sub-cancel-text {
-        @apply font-sans-bold text-background;
+        @apply font-sans-bold text-primary-foreground;
     }
 
     .home-empty-state {
-        @apply py-4 text-sm font-sans-medium text-black/60;
+        @apply py-4 text-sm font-sans-medium text-muted-foreground;
     }
 
     .auth-safe-area {
@@ -251,15 +337,15 @@
     }
 
     .auth-logo-mark {
-        @apply relative size-14 items-center justify-center rounded-2xl bg-accent;
+        @apply relative size-14 items-center justify-center rounded-xl border-2 border-border bg-accent shadow-sm;
     }
 
     .auth-logo-mark-text {
-        @apply text-2xl font-sans-extrabold text-background;
+        @apply text-2xl font-sans-extrabold text-primary;
     }
 
     .auth-wordmark {
-        @apply text-3xl font-sans-extrabold text-primary;
+        @apply text-3xl font-sans-extrabold tracking-tight text-foreground;
     }
 
     .auth-wordmark-sub {
@@ -267,7 +353,7 @@
     }
 
     .auth-title {
-        @apply text-3xl font-sans-bold text-primary;
+        @apply text-3xl font-sans-bold tracking-tight text-foreground;
     }
 
     .auth-subtitle {
@@ -275,7 +361,7 @@
     }
 
     .auth-card {
-        @apply mt-8 rounded-3xl border border-border bg-card p-5;
+        @apply mt-8 rounded-2xl border-2 border-border bg-card p-5 shadow-sm;
     }
 
     .auth-form {
@@ -287,11 +373,11 @@
     }
 
     .auth-label {
-        @apply text-sm font-sans-semibold text-primary;
+        @apply text-sm font-sans-semibold text-foreground;
     }
 
     .auth-input {
-        @apply rounded-2xl border border-border bg-background px-4 py-4 text-base font-sans-medium text-primary;
+        @apply rounded-xl border-2 border-border bg-background px-4 py-4 text-base font-sans-medium text-foreground;
     }
 
     .auth-input-error {
@@ -307,23 +393,23 @@
     }
 
     .auth-button {
-        @apply mt-1 items-center rounded-2xl bg-accent py-4;
+        @apply mt-1 items-center rounded-2xl bg-primary py-4;
     }
 
     .auth-button-disabled {
-        @apply bg-accent/45;
+        @apply bg-primary/45;
     }
 
     .auth-button-text {
-        @apply text-base font-sans-bold text-primary;
+        @apply text-base font-sans-bold text-primary-foreground;
     }
 
     .auth-secondary-button {
-        @apply items-center rounded-2xl border border-accent/30 bg-accent/10 py-3;
+        @apply items-center rounded-xl border-2 border-border bg-muted py-3 shadow-2xs;
     }
 
     .auth-secondary-button-text {
-        @apply text-sm font-sans-semibold text-accent;
+        @apply text-sm font-sans-semibold text-foreground;
     }
 
     .auth-divider-row {
@@ -347,74 +433,194 @@
     }
 
     .auth-link {
-        @apply text-sm font-sans-bold text-accent;
+        @apply text-sm font-sans-bold text-primary;
     }
 
     .modal-overlay {
-        @apply flex-1 bg-black/50;
+        @apply flex-1 bg-foreground/50;
     }
 
-    .modal-container {
-        @apply mt-auto max-h-[85%] rounded-t-3xl bg-background;
+    .create-sheet {
+        @apply mt-auto max-h-[92%] w-full rounded-t-3xl border-x-2 border-t-2 border-border bg-card shadow-lg;
     }
 
-    .modal-header {
-        @apply flex-row items-center justify-between border-b border-border px-5 py-4;
+    .create-handle {
+        @apply mt-3 mb-1 h-1.5 w-10 self-center rounded-full bg-border/50;
     }
 
-    .modal-title {
-        @apply text-xl font-sans-bold text-primary;
+    .create-header {
+        @apply flex-row items-center justify-between px-6 pt-3 pb-4;
     }
 
-    .modal-close {
-        @apply size-8 items-center justify-center rounded-full bg-muted;
+    .create-title {
+        @apply text-2xl font-sans-bold tracking-tight text-foreground;
     }
 
-    .modal-close-text {
-        @apply text-lg font-sans-bold text-primary;
+    .create-close {
+        @apply size-9 items-center justify-center rounded-full bg-muted;
     }
 
-    .modal-body {
-        @apply gap-5 p-5;
+    .create-close-text {
+        @apply -mt-0.5 text-2xl font-sans-bold text-muted-foreground;
     }
 
-    .picker-row {
-        @apply flex-row gap-3;
+    .create-preview {
+        @apply flex-row items-center gap-4 rounded-2xl border-2 border-border bg-background p-4;
     }
 
-    .picker-option {
-        @apply flex-1 items-center rounded-2xl border border-border bg-background py-3;
+    .create-preview-icon-wrap {
+        @apply size-16 items-center justify-center overflow-hidden rounded-2xl border-2 border-border;
     }
 
-    .picker-option-active {
-        @apply border-accent bg-accent/10;
+    .create-preview-icon {
+        @apply size-10;
     }
 
-    .picker-option-text {
+    .create-preview-copy {
+        @apply min-w-0 flex-1 gap-1;
+    }
+
+    .create-preview-title {
+        @apply text-lg font-sans-bold text-foreground;
+    }
+
+    .create-preview-meta {
+        @apply text-sm font-sans-medium text-muted-foreground;
+    }
+
+    .create-preview-tag-row {
+        @apply mt-0.5 flex-row items-center gap-1.5;
+    }
+
+    .create-preview-dot {
+        @apply size-2 rounded-full;
+    }
+
+    .create-preview-tag {
+        @apply text-xs font-sans-semibold uppercase tracking-wider text-muted-foreground;
+    }
+
+    .create-field {
+        @apply flex-col gap-2;
+    }
+
+    .create-label-row {
+        @apply flex-row items-center justify-between;
+    }
+
+    .create-label {
+        @apply text-sm font-sans-semibold text-foreground;
+    }
+
+    .create-label-hint {
+        @apply text-xs font-sans-medium text-muted-foreground;
+    }
+
+    .create-label-action {
+        @apply text-xs font-sans-bold uppercase tracking-wider text-primary;
+    }
+
+    .create-input {
+        @apply rounded-2xl border-2 border-border bg-background px-4 py-3.5 text-base font-sans-medium text-foreground;
+    }
+
+    .create-input-error {
+        @apply border-destructive;
+    }
+
+    .create-error {
+        @apply text-xs font-sans-medium text-destructive;
+    }
+
+    .create-price {
+        @apply flex-row items-center gap-2 rounded-2xl border-2 border-border bg-background px-4;
+    }
+
+    .create-price-error {
+        @apply border-destructive;
+    }
+
+    .create-price-prefix {
+        @apply text-lg font-sans-bold text-muted-foreground;
+    }
+
+    .create-price-input {
+        @apply min-w-0 flex-1 py-3.5 text-base font-sans-semibold text-foreground;
+    }
+
+    .create-price-suffix {
+        @apply text-xs font-sans-bold uppercase tracking-wider text-muted-foreground;
+    }
+
+    .create-segment {
+        @apply flex-row gap-1 rounded-2xl border-2 border-border bg-muted p-1;
+    }
+
+    .create-segment-pill {
+        @apply flex-1 items-center justify-center rounded-xl py-2.5;
+    }
+
+    .create-segment-pill-active {
+        @apply bg-card shadow-2xs;
+    }
+
+    .create-segment-text {
         @apply text-sm font-sans-semibold text-muted-foreground;
     }
 
-    .picker-option-text-active {
-        @apply text-accent;
+    .create-segment-text-active {
+        @apply text-foreground;
     }
 
-    .category-scroll {
+    .create-chips {
         @apply flex-row flex-wrap gap-2;
     }
 
-    .category-chip {
-        @apply rounded-full border border-border bg-background px-4 py-2;
+    .create-chip {
+        @apply flex-row items-center gap-2 rounded-full border-2 border-border bg-card px-3.5 py-2;
     }
 
-    .category-chip-active {
-        @apply border-accent bg-accent/10;
+    .create-chip-active {
+        @apply border-primary bg-secondary;
     }
 
-    .category-chip-text {
+    .create-chip-dot {
+        @apply size-2 rounded-full;
+    }
+
+    .create-chip-text {
         @apply text-sm font-sans-semibold text-muted-foreground;
     }
 
-    .category-chip-text-active {
-        @apply text-accent;
+    .create-chip-text-active {
+        @apply text-foreground;
+    }
+
+    .create-icon-grid {
+        @apply flex-row flex-wrap gap-2.5;
+    }
+
+    .create-icon-cell {
+        @apply size-14 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-background;
+    }
+
+    .create-icon-cell-active {
+        @apply border-primary bg-secondary;
+    }
+
+    .create-icon-thumb {
+        @apply size-9;
+    }
+
+    .create-submit {
+        @apply mt-1 items-center justify-center rounded-2xl bg-primary py-4 shadow-xs;
+    }
+
+    .create-submit-disabled {
+        @apply bg-primary/40 shadow-none;
+    }
+
+    .create-submit-text {
+        @apply text-base font-sans-bold text-primary-foreground;
     }
 }

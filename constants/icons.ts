@@ -39,3 +39,20 @@ export const icons = {
 } as const;
 
 export type IconKey = keyof typeof icons;
+
+/** Icons shown in “add subscription” (excludes nav / generic UI glyphs). */
+export const SUBSCRIPTION_PICKER_ICONS: IconKey[] = [
+    "spotify",
+    "notion",
+    "github",
+    "figma",
+    "openai",
+    "claude",
+    "canva",
+    "dropbox",
+    "adobe",
+    "medium",
+    "activity",
+    "setting",
+    "wallet",
+];

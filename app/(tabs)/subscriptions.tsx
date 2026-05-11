@@ -1,15 +1,11 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { SafeAreaView as RNSafeAreaView} from "react-native-safe-area-context";
-import { styled } from "nativewind";
-const SafeAreaView = styled(RNSafeAreaView);
+import "@/global.css";
+import { ComingSoon } from "@/components/ui/ComingSoon";
 
-const Subscriptions = () => {
+export default function SubscriptionsTab() {
   return (
-    <SafeAreaView className="flex-1 p-5 bg-background">
-      <Text>Subscriptions</Text>
-    </SafeAreaView>
-  )
+    <ComingSoon
+      title="Subscriptions"
+      subtitle="Library of plans, renewals, and shared spend — coming together here."
+    />
+  );
 }
-
-export default Subscriptions

@@ -1,68 +1,70 @@
-import {Tabs} from "expo-router";
-import {tabs} from "@/constants/data";
-import clsx from "clsx";
-import {   View } from "react-native";
-import {  Image } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {colors, components } from "@/constants/theme";
-
-const tabBar = components.tabBar;
+import "@/global.css";
+import { FloatingTabBar } from "@/components/FloatingTabBar";
+import { FullScreenLoader } from "@/components/ui/FullScreenLoader";
+import {
+  SubscriptionsProvider,
+  useSubscriptionsCtx,
+} from "@/state/SubscriptionsContext";
+import { useAuth } from "@clerk/expo";
+import { Redirect, Tabs } from "expo-router";
+import { tabs } from "@/config/tabs";
+import { colors } from "@/constants/theme";
 
 const TabLayout = () => {
-    const insets = useSafeAreaInsets();
-    const TabIcon = ({focused, icon}: TabIconProps) => {
-       return ( 
-       
-       <View className="tabs-icon">
-            <View className={clsx('tabs-pill', focused && 'tabs-active')}>
-                <Image source={icon} 
-                className="tabs-glyph" resizeMode="contain" />
+  const { isLoaded, isSignedIn } = useAuth();
 
-            </View>
-           
-        </View>
+  if (!isLoaded) {
+    return <FullScreenLoader />;
+  }
 
-       )
-    }
-    
+  if (!isSignedIn) {
+    return <Redirect href="/sign-in" />;
+  }
 
-  return ( 
-    <Tabs screenOptions={{
+  return (
+    <SubscriptionsProvider>
+      <TabsShell />
+    </SubscriptionsProvider>
+  );
+};
+
+const TabsShell = () => {
+  const { openCreate } = useSubscriptionsCtx();
+
+  return (
+    <Tabs
+      tabBar={(props) => (
+        <FloatingTabBar {...props} onPressCreate={openCreate} />
+      )}
+      screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        sceneStyle: { backgroundColor: colors.background },
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
-             position: 'absolute',
-            bottom:Math.max(insets.bottom, tabBar.horizontalInset),
-            height: tabBar.height,
-            marginHorizontal: tabBar.horizontalInset,
-            borderRadius: tabBar.radius,
-            backgroundColor: colors.primary,
-            borderTopWidth: 0,
-            elevation: 0,
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 0,
+          backgroundColor: "transparent",
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
         },
-        tabBarItemStyle: {
-            paddingVertical: tabBar.height/2 - tabBar.iconFrame/1.6,
-            
-        },
-        tabBarIconStyle: {
-            width: tabBar.iconFrame,
-            height: tabBar.iconFrame,
-            alignItems: 'center',
-        },
-    }}>
-            {tabs.map((tab) => (
-                <Tabs.Screen 
-                    key={tab.name} 
-                    name={tab.name} 
-                options={{
-                    title:tab.title,
-                    tabBarIcon: ({focused}) =>(
-                        <TabIcon focused={focused} icon={tab.icon} />
-                    )
-                }}/>
-            ))}
-        </Tabs>
-    )
- }
+      }}
+    >
+      {tabs.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+          }}
+        />
+      ))}
+    </Tabs>
+  );
+};
 
 export default TabLayout;
