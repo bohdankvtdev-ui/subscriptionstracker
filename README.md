@@ -2,11 +2,41 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Logo
+
+![App logo](logo.png)
+
 ## Screenshots
 
-Home dashboard (monthly run rate, next renewal, quick links):
+### Home
+
+Monthly run rate, next renewal, and quick links to Insights and all plans:
 
 ![Home dashboard](docs/screenshots/home-dashboard.png)
+
+### Insights — overview
+
+Summary tiles (monthly, true year, budget, balance) and six-month cash outlook:
+
+![Insights overview](docs/screenshots/IMG_5160.png)
+
+### Insights — charts (cash & categories)
+
+Six-month renewal bars and category distribution:
+
+![Insights cash outlook and categories](docs/screenshots/IMG_5156.png)
+
+### Insights — forecasts & cadence
+
+Billing cadence, renewal windows (30 / 60 / 90 days), and upcoming renewals list:
+
+![Insights forecasts and billing cadence](docs/screenshots/IMG_5157.png)
+
+### Insights — heatmap & suggestions
+
+Spending heatmap, lifecycle counts, and actionable suggestions:
+
+![Insights heatmap and suggestions](docs/screenshots/IMG_5158.png)
 
 ## Get started
 
