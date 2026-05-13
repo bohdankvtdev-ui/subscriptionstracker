@@ -52,6 +52,28 @@ export const spacing = {
     30: 120,
 } as const;
 
+/**
+ * Neo-brutalist 3D primitive tokens. Tiles sit above hard offset shadow blocks;
+ * pressing translates the tile by `offset` into its shadow.
+ */
+export const neo = {
+    border: 2.5,
+    borderLight: 2,
+    borderHeavy: 3,
+    radiusSm: 12,
+    radius: 16,
+    radiusLg: 20,
+    radiusXl: 24,
+    offsetXs: 3,
+    offsetSm: 4,
+    offset: 5,
+    offsetLg: 6,
+    /** Slightly snappier press so tiles feel responsive without a long “bounce back”. */
+    pressMs: 72,
+    releaseMs: 105,
+    shadowColor: "#1c2220",
+} as const;
+
 export const components = {
     /**
      * Floating capsule tab bar. On wide phones width is capped and centered so the pill

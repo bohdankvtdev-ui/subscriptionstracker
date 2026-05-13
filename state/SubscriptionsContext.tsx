@@ -3,29 +3,37 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
-  useState,
   type ReactNode,
 } from "react";
 import { useAuth } from "@clerk/expo";
 import type { Subscription } from "@/domain/subscription";
-import { HOME_SUBSCRIPTIONS } from "@/domain/seed";
 import CreateSubscriptionModal from "@/components/subscriptions/CreateSubscriptionModal";
-import { ApiError, apiFetch, getApiBaseUrl } from "@/lib/api";
+import { getApiBaseUrl } from "@/lib/api";
 import {
-  dtoToSubscription,
-  inputToCreateBody,
   type CreateSubscriptionInput,
-  type SubscriptionDTO,
+  type UpdateSubscriptionInput,
 } from "@/lib/subscriptions";
+import type { Account, AccountPatch } from "@/src/features/account/account.types";
+import { useAccountStore } from "@/src/features/account/account.store";
+import { useSubscriptionsStore } from "@/src/features/subscriptions/subscriptions.store";
 
 type SubscriptionsContextValue = {
   subscriptions: Subscription[];
+  account: Account;
   addSubscription: (input: CreateSubscriptionInput) => Promise<void>;
+  updateSubscription: (
+    id: string,
+    input: UpdateSubscriptionInput,
+  ) => Promise<void>;
+  deleteSubscription: (id: string) => Promise<void>;
+  updateAccount: (input: AccountPatch) => Promise<void>;
   isLoading: boolean;
+  isAccountLoading: boolean;
   isCreating: boolean;
+  isAccountSaving: boolean;
   error: string | null;
+  accountError: string | null;
   isCreateOpen: boolean;
   openCreate: () => void;
   closeCreate: () => void;
@@ -39,39 +47,45 @@ export function SubscriptionsProvider({ children }: { children: ReactNode }) {
   const { isSignedIn, getToken } = useAuth();
   const hasApi = getApiBaseUrl().length > 0;
 
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(() =>
-    hasApi ? [] : HOME_SUBSCRIPTIONS,
+  const subscriptions = useSubscriptionsStore((state) => state.subscriptions);
+  const account = useAccountStore((state) => state.account);
+  const isLoading = useSubscriptionsStore((state) => state.isLoading);
+  const isAccountLoading = useAccountStore((state) => state.isLoading);
+  const isCreating = useSubscriptionsStore((state) => state.isCreating);
+  const isAccountSaving = useAccountStore((state) => state.isSaving);
+  const error = useSubscriptionsStore((state) => state.error);
+  const accountError = useAccountStore((state) => state.error);
+  const isCreateOpen = useSubscriptionsStore((state) => state.isCreateOpen);
+  const initializeAccount = useAccountStore((state) => state.initialize);
+  const loadAccount = useAccountStore((state) => state.loadAccount);
+  const updateAccountInStore = useAccountStore((state) => state.updateAccount);
+  const initialize = useSubscriptionsStore((state) => state.initialize);
+  const loadSubscriptions = useSubscriptionsStore(
+    (state) => state.loadSubscriptions,
   );
-  const [isLoading, setIsLoading] = useState<boolean>(hasApi);
-  const [isCreating, setIsCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const addSubscriptionToStore = useSubscriptionsStore(
+    (state) => state.addSubscription,
+  );
+  const updateSubscriptionInStore = useSubscriptionsStore(
+    (state) => state.updateSubscription,
+  );
+  const deleteSubscriptionInStore = useSubscriptionsStore(
+    (state) => state.deleteSubscription,
+  );
+  const openCreate = useSubscriptionsStore((state) => state.openCreate);
+  const closeCreate = useSubscriptionsStore((state) => state.closeCreate);
 
+  const hasInitializedRef = useRef(false);
   const hasFetchedRef = useRef(false);
 
-  const loadFromServer = useCallback(async () => {
-    setError(null);
-    setIsLoading(true);
-    try {
-      const token = await getToken();
-      const res = await apiFetch(token, "/v1/subscriptions");
-      const data = (await res.json()) as { subscriptions: SubscriptionDTO[] };
-      setSubscriptions(data.subscriptions.map(dtoToSubscription));
-    } catch (err) {
-      console.warn("[subs] GET /v1/subscriptions failed", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load subscriptions.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [getToken]);
-
   useEffect(() => {
+    if (!hasInitializedRef.current) {
+      initialize(hasApi);
+      initializeAccount(hasApi);
+      hasInitializedRef.current = true;
+    }
+
     if (!hasApi) {
-      setIsLoading(false);
       return;
     }
     if (!isSignedIn) {
@@ -79,101 +93,60 @@ export function SubscriptionsProvider({ children }: { children: ReactNode }) {
     }
     if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
-    void loadFromServer();
-  }, [hasApi, isSignedIn, loadFromServer]);
+    void loadAccount(getToken);
+    void loadSubscriptions(getToken);
+  }, [
+    getToken,
+    hasApi,
+    initialize,
+    initializeAccount,
+    isSignedIn,
+    loadAccount,
+    loadSubscriptions,
+  ]);
 
   const addSubscription = useCallback(
-    async (input: CreateSubscriptionInput) => {
-      setIsCreating(true);
-      setError(null);
-      try {
-        if (!hasApi) {
-          const body = inputToCreateBody(input);
-          const now = new Date();
-          const renewal = new Date(now);
-          if (input.frequency === "Yearly") {
-            renewal.setUTCFullYear(renewal.getUTCFullYear() + 1);
-          } else {
-            renewal.setUTCMonth(renewal.getUTCMonth() + 1);
-          }
-          const local = dtoToSubscription({
-            id: `sub_local_${Date.now()}`,
-            name: body.name,
-            price: body.price,
-            currency: body.currency,
-            frequency: body.frequency,
-            category: body.category,
-            status: "active",
-            icon: body.icon,
-            color: body.color,
-            startDate: now.toISOString(),
-            renewalDate: renewal.toISOString(),
-            billing: body.frequency,
-          });
-          setSubscriptions((prev) => [local, ...prev]);
-          return;
-        }
-
-        const token = await getToken();
-        const res = await apiFetch(token, "/v1/subscriptions", {
-          method: "POST",
-          body: JSON.stringify(inputToCreateBody(input)),
-        });
-        const data = (await res.json()) as { subscription: SubscriptionDTO };
-        setSubscriptions((prev) => [
-          dtoToSubscription(data.subscription),
-          ...prev,
-        ]);
-      } catch (err) {
-        const message =
-          err instanceof ApiError
-            ? `${err.message}${
-                err.body
-                  ? `: ${
-                      typeof err.body === "string"
-                        ? err.body
-                        : JSON.stringify(err.body)
-                    }`
-                  : ""
-              }`
-            : err instanceof Error
-              ? err.message
-              : "Failed to create subscription.";
-        console.warn("[subs] POST /v1/subscriptions failed", err);
-        setError(message);
-        throw err;
-      } finally {
-        setIsCreating(false);
-      }
-    },
-    [hasApi, getToken],
+    (input: CreateSubscriptionInput) =>
+      addSubscriptionToStore(
+        { currency: account.defaultCurrency, ...input },
+        getToken,
+      ),
+    [account.defaultCurrency, addSubscriptionToStore, getToken],
   );
 
-  const openCreate = useCallback(() => setIsCreateOpen(true), []);
-  const closeCreate = useCallback(() => setIsCreateOpen(false), []);
-
-  const value = useMemo<SubscriptionsContextValue>(
-    () => ({
-      subscriptions,
-      addSubscription,
-      isLoading,
-      isCreating,
-      error,
-      isCreateOpen,
-      openCreate,
-      closeCreate,
-    }),
-    [
-      subscriptions,
-      addSubscription,
-      isLoading,
-      isCreating,
-      error,
-      isCreateOpen,
-      openCreate,
-      closeCreate,
-    ],
+  const updateSubscription = useCallback(
+    (id: string, input: UpdateSubscriptionInput) =>
+      updateSubscriptionInStore(id, input, getToken),
+    [getToken, updateSubscriptionInStore],
   );
+
+  const deleteSubscription = useCallback(
+    (id: string) => deleteSubscriptionInStore(id, getToken),
+    [deleteSubscriptionInStore, getToken],
+  );
+
+  const updateAccount = useCallback(
+    (input: AccountPatch) => updateAccountInStore(input, getToken),
+    [getToken, updateAccountInStore],
+  );
+
+  const value: SubscriptionsContextValue = {
+    subscriptions,
+    account,
+    addSubscription,
+    updateSubscription,
+    deleteSubscription,
+    updateAccount,
+    isLoading,
+    isAccountLoading,
+    isCreating,
+    isAccountSaving,
+    error,
+    accountError,
+    isCreateOpen,
+    openCreate,
+    closeCreate,
+  };
 
   return (
     <SubscriptionsContext.Provider value={value}>

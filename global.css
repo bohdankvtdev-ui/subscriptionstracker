@@ -464,22 +464,6 @@
         @apply -mt-0.5 text-2xl font-sans-bold text-muted-foreground;
     }
 
-    .create-preview {
-        @apply flex-row items-center gap-4 rounded-2xl border-2 border-border bg-background p-4;
-    }
-
-    .create-preview-icon-wrap {
-        @apply size-16 items-center justify-center overflow-hidden rounded-2xl border-2 border-border;
-    }
-
-    .create-preview-icon {
-        @apply size-10;
-    }
-
-    .create-preview-copy {
-        @apply min-w-0 flex-1 gap-1;
-    }
-
     .create-preview-title {
         @apply text-lg font-sans-bold text-foreground;
     }
@@ -552,18 +536,6 @@
         @apply text-xs font-sans-bold uppercase tracking-wider text-muted-foreground;
     }
 
-    .create-segment {
-        @apply flex-row gap-1 rounded-2xl border-2 border-border bg-muted p-1;
-    }
-
-    .create-segment-pill {
-        @apply flex-1 items-center justify-center rounded-xl py-2.5;
-    }
-
-    .create-segment-pill-active {
-        @apply bg-card shadow-2xs;
-    }
-
     .create-segment-text {
         @apply text-sm font-sans-semibold text-muted-foreground;
     }
@@ -574,14 +546,6 @@
 
     .create-chips {
         @apply flex-row flex-wrap gap-2;
-    }
-
-    .create-chip {
-        @apply flex-row items-center gap-2 rounded-full border-2 border-border bg-card px-3.5 py-2;
-    }
-
-    .create-chip-active {
-        @apply border-primary bg-secondary;
     }
 
     .create-chip-dot {
@@ -596,31 +560,4 @@
         @apply text-foreground;
     }
 
-    .create-icon-grid {
-        @apply flex-row flex-wrap gap-2.5;
-    }
-
-    .create-icon-cell {
-        @apply size-14 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-background;
-    }
-
-    .create-icon-cell-active {
-        @apply border-primary bg-secondary;
-    }
-
-    .create-icon-thumb {
-        @apply size-9;
-    }
-
-    .create-submit {
-        @apply mt-1 items-center justify-center rounded-2xl bg-primary py-4 shadow-xs;
-    }
-
-    .create-submit-disabled {
-        @apply bg-primary/40 shadow-none;
-    }
-
-    .create-submit-text {
-        @apply text-base font-sans-bold text-primary-foreground;
-    }
 }

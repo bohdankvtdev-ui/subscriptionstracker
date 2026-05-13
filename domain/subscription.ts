@@ -33,15 +33,16 @@ export const CATEGORY_COLORS: Record<SubscriptionCategory, string> = {
 export type Subscription = {
   id: string;
   icon: ImageSourcePropType;
+  iconKey?: string;
   name: string;
   plan?: string;
-  category?: string;
+  category?: SubscriptionCategory;
   paymentMethod?: string;
-  status?: string;
+  status?: SubscriptionStatus;
   startDate?: string;
   price: number;
   currency?: string;
-  billing: string;
+  billing: SubscriptionFrequency;
   renewalDate?: string;
   color?: string;
 };
@@ -50,16 +51,22 @@ export type SubscriptionCardProps = Omit<Subscription, "id"> & {
   expanded: boolean;
   onPress: () => void;
   onCancelPress?: () => void;
+  onDeletePress?: () => void;
   isCancelling?: boolean;
+  isDeleting?: boolean;
 };
 
 export type UpcomingSubscription = {
   id: string;
   icon: ImageSourcePropType;
+  iconKey?: string;
   name: string;
   price: number;
   currency?: string;
   daysLeft: number;
 };
 
-export type UpcomingSubscriptionCardProps = Omit<UpcomingSubscription, "id">;
+export type UpcomingSubscriptionCardProps = Omit<UpcomingSubscription, "id"> & {
+  /** Opens subscription detail when provided (e.g. home upcoming row). */
+  onPress?: () => void;
+};

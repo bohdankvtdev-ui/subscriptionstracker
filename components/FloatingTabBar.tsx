@@ -4,7 +4,6 @@ import {
   CommonActions,
   useLinkBuilder,
 } from "@react-navigation/native";
-import { PlatformPressable } from "@react-navigation/elements";
 import { selectionAsync } from "expo-haptics";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -17,10 +16,19 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { tabBarIoniconName } from "@/config/tabs";
-import { colors, components, spacing } from "@/constants/theme";
+import { springTabFocus } from "@/constants/motion";
+import { colors, components, neo, spacing } from "@/constants/theme";
+import { Press3D } from "@/components/ui/Press3D";
 
 const tabBar = components.tabBar;
 
@@ -54,7 +62,8 @@ type FloatingTabBarProps = BottomTabBarProps & {
 
 /**
  * Custom floating tab bar: neo-brutalist capsule, paper active tile, Ionicons,
- * center FAB "+" (not a route) that overflows the track upward.
+ * center FAB "+" (not a route) that overflows the track upward. Active chip
+ * eases into a raised paper tile; the FAB uses Press3D for press depth.
  */
 export function FloatingTabBar({
   state,
@@ -93,7 +102,6 @@ export function FloatingTabBar({
     );
   }, [layoutWidth, edgePad]);
 
-  // Bottom padding: safe-area + theme nudge + lift; `bottomInsetNudge` is the visible vertical tweak.
   const rawSafeBottom =
     Platform.OS === "android"
       ? Math.max(insets.bottom, spacing[2])
@@ -113,8 +121,6 @@ export function FloatingTabBar({
     [onHeightChange],
   );
 
-  // Splice the synthetic "+" slot into the middle position so the visual order
-  // becomes: Home, Subscriptions, +, Insights, Settings. The "+" is not a route.
   const createSlotIndex = Math.floor(state.routes.length / 2);
 
   const renderRouteSlot = (
@@ -154,66 +160,46 @@ export function FloatingTabBar({
     };
 
     return (
-      <PlatformPressable
+      <TabChip
         key={route.key}
+        focused={focused}
         href={buildHref(route.name, route.params)}
-        accessibilityRole="tab"
-        accessibilityState={{ selected: focused }}
         accessibilityLabel={label}
         testID={options.tabBarButtonTestID}
-        android_ripple={
-          Platform.OS === "android"
-            ? { color: `${colors.foreground}18`, borderless: true }
-            : undefined
-        }
         onPress={onPress}
         onLongPress={onLongPress}
-        style={[styles.slot, { minHeight: CHIP }]}
-      >
-        <View
-          style={[
-            styles.chip,
-            { width: CHIP, height: CHIP, borderRadius: CHIP / 2 },
-            focused ? styles.chipFocused : styles.chipIdle,
-          ]}
-        >
-          <Ionicons
-            name={tabBarIoniconName(route.name, focused)}
-            size={ICON}
-            color={colors.foreground}
-            style={{ opacity: focused ? 1 : 0.55 }}
-          />
-        </View>
-      </PlatformPressable>
+        routeName={route.name}
+      />
     );
   };
 
-  const renderCreateSlot = () => {
-    return (
-      <View key="__create__" style={styles.fabSlot}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="New subscription"
-          testID="tab-create-fab"
-          onPress={() => {
-            void selectionAsync();
-            onPressCreate?.();
-          }}
-          style={({ pressed }) => [
-            styles.fab,
-            {
-              width: FAB,
-              height: FAB,
-              borderRadius: tabBar.fabRadius,
-              transform: [{ translateY: pressed ? 1 : 0 }],
-            },
-          ]}
-        >
-          <Ionicons name="add" size={FAB_ICON} color={colors.foreground} />
-        </Pressable>
-      </View>
-    );
-  };
+  const renderCreateSlot = () => (
+    <View key="__create__" style={styles.fabSlot}>
+      <Press3D
+        accessibilityRole="button"
+        accessibilityLabel="New subscription"
+        testID="tab-create-fab"
+        offset={tabBar.fabShadowOffset.width}
+        radius={tabBar.fabRadius}
+        shadowColor={colors.border}
+        onPress={() => {
+          void selectionAsync();
+          onPressCreate?.();
+        }}
+        style={{
+          width: FAB,
+          height: FAB,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: tabBar.fabBackground,
+          borderWidth: tabBar.fabBorderWidth,
+          borderColor: colors.border,
+        }}
+      >
+        <Ionicons name="add" size={FAB_ICON} color={colors.foreground} />
+      </Press3D>
+    </View>
+  );
 
   return (
     <View
@@ -256,6 +242,122 @@ export function FloatingTabBar({
   );
 }
 
+type TabChipProps = {
+  focused: boolean;
+  href?: string;
+  accessibilityLabel: string;
+  testID?: string;
+  onPress: () => void;
+  onLongPress: () => void;
+  routeName: string;
+};
+
+/**
+ * Single tab chip. Idle chips are flat; focused chips ease into a raised
+ * paper tile with a hard ink offset shadow. Pressing runs a short stamp.
+ */
+function TabChip({
+  focused,
+  accessibilityLabel,
+  testID,
+  onPress,
+  onLongPress,
+  routeName,
+}: TabChipProps) {
+  const focus = useSharedValue(focused ? 1 : 0);
+  const press = useSharedValue(0);
+
+  useEffect(() => {
+    focus.value = withSpring(focused ? 1 : 0, springTabFocus);
+  }, [focused, focus]);
+
+  const chipStyle = useAnimatedStyle(() => {
+    const lift = focus.value * 2;
+    const sink = press.value * 1.5;
+    const scale = 1 + focus.value * 0.028 - press.value * 0.022;
+    return {
+      transform: [{ translateY: -lift + sink }, { scale }],
+    };
+  });
+
+  const shadowStyle = useAnimatedStyle(() => ({
+    opacity: focus.value * (1 - press.value * 0.85),
+    transform: [
+      {
+        translateY: focus.value * 0 + press.value * 2,
+      },
+      {
+        translateX: press.value * 1,
+      },
+    ],
+  }));
+
+  const iconStyle = useAnimatedStyle(() => ({
+    opacity: 0.55 + focus.value * 0.45,
+  }));
+
+  return (
+    <Pressable
+      accessibilityRole="tab"
+      accessibilityState={{ selected: focused }}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      onPressIn={() => {
+        press.value = withTiming(1, {
+          duration: 70,
+          easing: Easing.out(Easing.quad),
+        });
+      }}
+      onPressOut={() => {
+        press.value = withTiming(0, {
+          duration: 100,
+          easing: Easing.out(Easing.cubic),
+        });
+      }}
+      style={[styles.slot, { minHeight: CHIP }]}
+    >
+      <View style={styles.chipWrap}>
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.chipShadow,
+            {
+              width: CHIP,
+              height: CHIP,
+              borderRadius: CHIP / 2,
+            },
+            shadowStyle,
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.chip,
+            {
+              width: CHIP,
+              height: CHIP,
+              borderRadius: CHIP / 2,
+              backgroundColor: focused ? colors.card : "transparent",
+              borderColor: colors.border,
+              borderWidth: focused ? tabBar.chipFocusedBorderWidth : 0,
+            },
+            chipStyle,
+          ]}
+        >
+          <Animated.View style={iconStyle}>
+            <Ionicons
+              name={tabBarIoniconName(routeName, focused)}
+              size={ICON}
+              color={colors.foreground}
+            />
+          </Animated.View>
+        </Animated.View>
+      </View>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   shell: {
     justifyContent: "flex-end",
@@ -293,61 +395,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  chipWrap: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chipShadow: {
+    position: "absolute",
+    top: 3,
+    left: 2,
+    backgroundColor: neo.shadowColor,
+  },
   chip: {
     alignItems: "center",
     justifyContent: "center",
   },
-  chipFocused: {
-    backgroundColor: colors.card,
-    borderWidth: tabBar.chipFocusedBorderWidth,
-    borderColor: colors.border,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.border,
-        shadowOffset: tabBar.chipFocusedShadowOffset,
-        shadowOpacity: 1,
-        shadowRadius: 0,
-      },
-      android: {
-        elevation: 6,
-      },
-      default: {
-        boxShadow: `${tabBar.chipFocusedShadowOffset.width}px ${tabBar.chipFocusedShadowOffset.height}px 0 0 ${colors.border}`,
-      },
-    }),
-  },
-  chipIdle: {
-    backgroundColor: "transparent",
-    borderWidth: 0,
-  },
   fabSlot: {
-    // Same flex weight as a sibling tab so spacing stays even.
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    // Negative top margin lifts the FAB above the capsule top without growing
-    // the capsule itself. `overflow: visible` on `track` keeps it rendered.
     marginTop: -tabBar.fabLift,
-  },
-  fab: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: tabBar.fabBackground,
-    borderWidth: tabBar.fabBorderWidth,
-    borderColor: colors.border,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.border,
-        shadowOffset: tabBar.fabShadowOffset,
-        shadowOpacity: 1,
-        shadowRadius: 0,
-      },
-      android: {
-        elevation: 10,
-      },
-      default: {
-        boxShadow: `${tabBar.fabShadowOffset.width}px ${tabBar.fabShadowOffset.height}px 0 0 ${colors.border}`,
-      },
-    }),
   },
 });

@@ -2,6 +2,12 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Screenshots
+
+Home dashboard (monthly run rate, next renewal, quick links):
+
+![Home dashboard](docs/screenshots/home-dashboard.png)
+
 ## Get started
 
 1. Install dependencies
